@@ -1,4 +1,4 @@
-from bot import Bot, bat
+from bot import *
 
 Bot().run()
-bat().run()
+
