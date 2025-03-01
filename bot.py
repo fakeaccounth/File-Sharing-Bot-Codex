@@ -57,8 +57,8 @@ class Bot(Client):
         try:
             db_channel = await self.get_chat(CHANNEL_ID)
             self.db_channel = db_channel
-            test = await self.send_message(chat_id=db_channel.id, text="Test Message")
-            await test.delete()
+            #test = await self.send_message(chat_id=db_channel.id, text="Test Message")
+            #await test.delete()
         except Exception as e:
             self.LOGGER(__name__).warning(f"Database channel error: {e}")
             sys.exit()
