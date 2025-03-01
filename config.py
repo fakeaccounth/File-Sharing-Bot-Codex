@@ -11,7 +11,7 @@ from logging.handlers import RotatingFileHandler
 
 #Bot token @Botfather
 
-BOT_TOKENS = os.environ.get("BOT_TOKENS", "6403720726:AAH2s38VIkj9TWcxA2ZNlRmnz-G2CSot4MA, 7934694179:AAGoY4YqNZ-TYq1i3LYohud8a8pTa2LH6HM").split(",")
+BOT_TOKENS = os.environ.get("BOT_TOKENS", "6403720726:AAH2s38VIkj9TWcxA2ZNlRmnz-G2CSot4MA,7934694179:AAGoY4YqNZ-TYq1i3LYohud8a8pTa2LH6HM").split(",")
 
 if not BOT_TOKENS:
     raise Exception("No bot tokens provided!")
