@@ -21,10 +21,11 @@ if not BOT_TOKENS:
 # Base port for web server (increments for each bot)
 BASE_PORT = 3788  
 
+
 class Bot(Client):
     def __init__(self, bot_token, port):
         super().__init__(
-            name=f"Bot_{bot_token.split(':')[0]}",  # Unique name per bot
+            name=f"Bot_{bot_token.split(':')[0]}",  # Unique session name
             api_hash=API_HASH,
             api_id=APP_ID,
             plugins={"root": "plugins"},
@@ -33,15 +34,15 @@ class Bot(Client):
         )
         self.LOGGER = LOGGER
         self.bot_token = bot_token
-        self.port = port  # Unique port for each bot
+        self.port = port
 
     async def start(self):
         await super().start()
         usr_bot_me = await self.get_me()
         self.uptime = datetime.now()
+
         self.LOGGER(__name__).info(f"Bot @{usr_bot_me.username} is running on port {self.port}!")
 
-        # Force Subscription Check
         if FORCE_SUB_CHANNEL:
             try:
                 link = (await self.get_chat(FORCE_SUB_CHANNEL)).invite_link
@@ -50,36 +51,36 @@ class Bot(Client):
                     link = (await self.get_chat(FORCE_SUB_CHANNEL)).invite_link
                 self.invitelink = link
             except Exception as e:
-                self.LOGGER(__name__).warning(f"Error exporting invite link: {e}")
+                self.LOGGER(__name__).warning(f"Force Sub Error: {e}")
                 sys.exit()
 
-        # Database Channel Check
         try:
             db_channel = await self.get_chat(CHANNEL_ID)
-            self.db_channel = db_channel
-            #test = await self.send_message(chat_id=db_channel.id, text="Test Message")
-            #await test.delete()
+            test = await self.send_message(chat_id=db_channel.id, text="Test Message")
+            await test.delete()
         except Exception as e:
-            self.LOGGER(__name__).warning(f"Database channel error: {e}")
+            self.LOGGER(__name__).warning(f"DB Channel Error: {e}")
             sys.exit()
 
         self.set_parse_mode(ParseMode.HTML)
-        print(f"Bot @{usr_bot_me.username} started on port {self.port}")
 
-        # Web server setup (each bot gets a different port)
-        try:
-            app = web.AppRunner(await web_server())
-            await app.setup()
-            await web.TCPSite(app, "0.0.0.0", self.port).start()
-        except Exception as e:
-            self.LOGGER(__name__).warning(f"Failed to start web server on port {self.port}: {e}")
+        # Web server setup for each bot
+        app = web.AppRunner(await web_server())
+        await app.setup()
+        bind_address = "0.0.0.0"
+        await web.TCPSite(app, bind_address, self.port).start()
 
     async def stop(self, *args):
         await super().stop()
-        self.LOGGER(__name__).info(f"Bot @{self.bot_token} stopped.")
+        self.LOGGER(__name__).info(f"Bot on port {self.port} stopped.")
 
 async def main():
-    bots = [Bot(token, BASE_PORT + i) for i, token in enumerate(BOT_TOKENS)]
+    bots = []
+    for index, token in enumerate(BOT_TOKENS):
+        port = BASE_PORT + index  # Assign unique port for each bot
+        bot = Bot(token, port)
+        bots.append(bot)
+
     await asyncio.gather(*(bot.start() for bot in bots))
 
 if __name__ == "__main__":
