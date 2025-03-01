@@ -15,7 +15,7 @@ TG_BOT_TOKEN_1 = os.environ.get("TG_BOT_TOKEN_1", "6403720726:AAH2s38VIkj9TWcxA2
 
 TG_BOT_TOKEN_2 = os.environ.get("TG_BOT_TOKEN_2", "7934694179:AAGoY4YqNZ-TYq1i3LYohud8a8pTa2LH6HM")
 
-BOT_USERNAME = os.environ.get("BOT_USERNAME", "")
+BOT_USERNAME = os.environ.get("BOT_USERNAME", "Uskabsns_bot")
 #bot username for file retrieval | without @
 
 #Your API ID from my.telegram.org
