@@ -23,25 +23,23 @@ BASE_PORT = 3788
 
 
 class Bot(Client):
-    def __init__(self, bot_token, port):
+    def __init__(self):
         super().__init__(
-            name=f"Bot_{bot_token.split(':')[0]}",  # Unique session name
+            name="Bot",
             api_hash=API_HASH,
             api_id=APP_ID,
-            plugins={"root": "plugins"},
+            plugins={
+                "root": "plugins"
+            },
             workers=TG_BOT_WORKERS,
-            bot_token=bot_token
+            bot_token=BOT_TOKENS
         )
         self.LOGGER = LOGGER
-        self.bot_token = bot_token
-        self.port = port
 
     async def start(self):
         await super().start()
         usr_bot_me = await self.get_me()
         self.uptime = datetime.now()
-
-        self.LOGGER(__name__).info(f"Bot @{usr_bot_me.username} is running on port {self.port}!")
 
         if FORCE_SUB_CHANNEL:
             try:
@@ -50,10 +48,12 @@ class Bot(Client):
                     await self.export_chat_invite_link(FORCE_SUB_CHANNEL)
                     link = (await self.get_chat(FORCE_SUB_CHANNEL)).invite_link
                 self.invitelink = link
-            except Exception as e:
-                self.LOGGER(__name__).warning(f"Force Sub Error: {e}")
+            except Exception as a:
+                self.LOGGER(__name__).warning(a)
+                self.LOGGER(__name__).warning("Bot can't Export Invite link from Force Sub Channel!")
+                self.LOGGER(__name__).warning(f"Please Double check the FORCE_SUB_CHANNEL value and Make sure Bot is Admin in channel with Invite Users via Link Permission, Current Force Sub Channel Value: {FORCE_SUB_CHANNEL}")
+                self.LOGGER(__name__).info("\nBot Stopped. Join https://t.me/CodeXBotzSupport for support")
                 sys.exit()
-
         try:
             db_channel = await self.get_chat(CHANNEL_ID)
             self.db_channel = db_channel
@@ -66,25 +66,15 @@ class Bot(Client):
             sys.exit()
 
         self.set_parse_mode(ParseMode.HTML)
-
-        # Web server setup for each bot
+        self.LOGGER(__name__).info(f"Bot Running..!\n\nCreated by \nhttps://t.me/CodeXBotz")
+        print("""Welcome to CodeXBotz File Sharing Bot""")
+        self.username = usr_bot_me.username
+        #web-response
         app = web.AppRunner(await web_server())
         await app.setup()
         bind_address = "0.0.0.0"
-        await web.TCPSite(app, bind_address, self.port).start()
+        await web.TCPSite(app, bind_address, PORT).start()
 
     async def stop(self, *args):
         await super().stop()
-        self.LOGGER(__name__).info(f"Bot on port {self.port} stopped.")
-
-async def main():
-    bots = []
-    for index, token in enumerate(BOT_TOKENS):
-        port = BASE_PORT + index  # Assign unique port for each bot
-        bot = Bot(token, port)
-        bots.append(bot)
-
-    await asyncio.gather(*(bot.start() for bot in bots))
-
-if __name__ == "__main__":
-    asyncio.run(main())
+        self.LOGGER(__name__).info("Bot stopped.")
