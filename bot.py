@@ -1,17 +1,15 @@
+import asyncio
+import os
+import sys
+from datetime import datetime
 from aiohttp import web
-from plugins import web_server
-
 import pyromod.listen
 from pyrogram import Client
 from pyrogram.enums import ParseMode
-import sys
-import asyncio
-from datetime import datetime
-
-
+from plugins import web_server
 from config import *
 
-# Fetch bot tokens from the environment and split them into a list
+# Fetch bot tokens from the environment
 BOT_TOKENS = os.environ.get(
     "BOT_TOKENS",
     "6403720726:AAH2s38VIkj9TWcxA2ZNlRmnz-G2CSot4MA,7934694179:AAGoY4YqNZ-TYq1i3LYohud8a8pTa2LH6HM"
@@ -20,8 +18,11 @@ BOT_TOKENS = os.environ.get(
 if not BOT_TOKENS:
     raise Exception("No bot tokens provided!")
 
+# Base port for web server (increments for each bot)
+BASE_PORT = 3788  
+
 class Bot(Client):
-    def __init__(self, bot_token):
+    def __init__(self, bot_token, port):
         super().__init__(
             name=f"Bot_{bot_token.split(':')[0]}",  # Unique name per bot
             api_hash=API_HASH,
@@ -32,14 +33,15 @@ class Bot(Client):
         )
         self.LOGGER = LOGGER
         self.bot_token = bot_token
+        self.port = port  # Unique port for each bot
 
     async def start(self):
         await super().start()
         usr_bot_me = await self.get_me()
         self.uptime = datetime.now()
-        self.LOGGER(__name__).info(f"Bot @{usr_bot_me.username} is running!")
+        self.LOGGER(__name__).info(f"Bot @{usr_bot_me.username} is running on port {self.port}!")
 
-        
+        # Force Subscription Check
         if FORCE_SUB_CHANNEL:
             try:
                 link = (await self.get_chat(FORCE_SUB_CHANNEL)).invite_link
@@ -47,39 +49,37 @@ class Bot(Client):
                     await self.export_chat_invite_link(FORCE_SUB_CHANNEL)
                     link = (await self.get_chat(FORCE_SUB_CHANNEL)).invite_link
                 self.invitelink = link
-            except Exception as a:
-                self.LOGGER(__name__).warning(a)
-                self.LOGGER(__name__).warning("Bot can't Export Invite link from Force Sub Channel!")
-                self.LOGGER(__name__).warning(f"Please Double check the FORCE_SUB_CHANNEL value and Make sure Bot is Admin in channel with Invite Users via Link Permission, Current Force Sub Channel Value: {FORCE_SUB_CHANNEL}")
-                self.LOGGER(__name__).info("\nBot Stopped. Join https://t.me/CodeXBotzSupport for support")
+            except Exception as e:
+                self.LOGGER(__name__).warning(f"Error exporting invite link: {e}")
                 sys.exit()
+
+        # Database Channel Check
         try:
             db_channel = await self.get_chat(CHANNEL_ID)
             self.db_channel = db_channel
-            test = await self.send_message(chat_id = db_channel.id, text = "Test Message")
+            test = await self.send_message(chat_id=db_channel.id, text="Test Message")
             await test.delete()
         except Exception as e:
-            self.LOGGER(__name__).warning(e)
-            self.LOGGER(__name__).warning(f"Make Sure bot is Admin in DB Channel, and Double check the CHANNEL_ID Value, Current Value {CHANNEL_ID}")
-            self.LOGGER(__name__).info("\nBot Stopped. Join https://t.me/CodeXBotzSupport for support")
+            self.LOGGER(__name__).warning(f"Database channel error: {e}")
             sys.exit()
 
         self.set_parse_mode(ParseMode.HTML)
-        self.LOGGER(__name__).info(f"Bot Running..!\n\nCreated by \nhttps://t.me/CodeXBotz")
-        print("""Welcome to CodeXBotz File Sharing Bot""")
-        self.username = usr_bot_me.username
-        #web-response
-        app = web.AppRunner(await web_server())
-        await app.setup()
-        bind_address = "0.0.0.0"
-        await web.TCPSite(app, bind_address, PORT).start()
+        print(f"Bot @{usr_bot_me.username} started on port {self.port}")
+
+        # Web server setup (each bot gets a different port)
+        try:
+            app = web.AppRunner(await web_server())
+            await app.setup()
+            await web.TCPSite(app, "0.0.0.0", self.port).start()
+        except Exception as e:
+            self.LOGGER(__name__).warning(f"Failed to start web server on port {self.port}: {e}")
 
     async def stop(self, *args):
         await super().stop()
-        self.LOGGER(__name__).info("Bot stopped.")
+        self.LOGGER(__name__).info(f"Bot @{self.bot_token} stopped.")
 
 async def main():
-    bots = [Bot(token) for token in BOT_TOKENS]
+    bots = [Bot(token, BASE_PORT + i) for i, token in enumerate(BOT_TOKENS)]
     await asyncio.gather(*(bot.start() for bot in bots))
 
 if __name__ == "__main__":
