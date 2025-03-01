@@ -79,7 +79,7 @@ class Bot(Client):
         await super().stop()
         self.LOGGER(__name__).info("Bot stopped.")
 
-class bat(Client):
+class Bot(Client):
     def __init__(self):
         super().__init__(
             name="bat",
