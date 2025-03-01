@@ -73,3 +73,10 @@ class Bot(Client):
     async def stop(self, *args):
         await super().stop()
         self.LOGGER(__name__).info("Bot stopped.")
+
+async def main():
+    bots = [Bot(token) for token in BOT_TOKENS]
+    await asyncio.gather(*(bot.start() for bot in bots))
+
+if __name__ == "__main__":
+    asyncio.run(main())
