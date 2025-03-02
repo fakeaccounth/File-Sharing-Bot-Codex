@@ -5,11 +5,12 @@ from pyrogram import filters, Client
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
 
-from bot import Bot
+from bot import *
 from config import *
 from helper_func import encode
 
 @Bot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start','users','broadcast','batch','genlink','stats']))
+@Dot.on_message(filters.private & filters.user(ADMINS) & ~filters.command(['start','users','broadcast','batch','genlink','stats']))
 async def channel_post(client: Client, message: Message):
     reply_text = await message.reply_text("Please Wait...!", quote = True)
     try:
@@ -34,6 +35,7 @@ async def channel_post(client: Client, message: Message):
         await post_message.edit_reply_markup(reply_markup)
 
 @Bot.on_message(filters.channel & filters.incoming & filters.chat(CHANNEL_ID))
+@Dot.on_message(filters.channel & filters.incoming & filters.chat(CHANNEL_ID))
 async def new_post(client: Client, message: Message):
 
     if DISABLE_CHANNEL_BUTTON:
