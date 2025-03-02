@@ -1,4 +1,4 @@
-from bot import Bot
+from bot import *
 from pyrogram.types import Message
 from pyrogram import filters
 from config import ADMINS, BOT_STATS_TEXT, USER_REPLY_TEXT
