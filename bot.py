@@ -81,7 +81,7 @@ class Bot(Client):
 class Dot(Client):
     def __init__(self):
         super().__init__(
-            name="Bot",
+            name="Dot",
             api_hash=API_HASH,
             api_id=APP_ID,
             plugins={
@@ -122,7 +122,7 @@ class Dot(Client):
             sys.exit()
 
         self.set_parse_mode(ParseMode.HTML)
-        self.LOGGER(__name__).info(f"Bot Running..!\n\nCreated by \nhttps://t.me/CodeXBotz")
+        self.LOGGER(__name__).info(f"Dot Running..!\n\nCreated by \nhttps://t.me/CodeXBotz")
         print("""Welcome to CodeXBotz File Sharing Bot""")
         self.username = usr_bot_me.username
         #web-response
