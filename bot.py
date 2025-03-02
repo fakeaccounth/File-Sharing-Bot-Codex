@@ -134,3 +134,15 @@ class Dot(Client):
     async def stop(self, *args):
         await super().stop()
         self.LOGGER(__name__).info("Bot stopped.")
+
+async def main():
+    bot1 = Dot()
+    bot2 = Bot()
+
+    try:
+        await asyncio.gather(bot1.start(), bot2.start())
+    except Exception as e:
+        print(f"Error starting bots: {e}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
