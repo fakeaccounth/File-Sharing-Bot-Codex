@@ -10,17 +10,6 @@ from pyrogram.handlers import MessageHandler
 from plugins import web_server
 from config import *
 
-# Fetch bot tokens from the environment
-BOT_TOKENS = os.environ.get(
-    "BOT_TOKENS",
-    "6403720726:AAH2s38VIkj9TWcxA2ZNlRmnz-G2CSot4MA,7934694179:AAGY4YqNZ-TYq1i3LYohud8a8pTa2LH6HM"
-).split(",")
-
-if not BOT_TOKENS or len(BOT_TOKENS) < 2:
-    raise Exception("No bot tokens provided!")
-
-BASE_PORT = 3788  # Base port for web servers
-
 class Bot(Client):
     def __init__(self):
         super().__init__(
