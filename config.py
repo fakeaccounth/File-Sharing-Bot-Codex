@@ -10,41 +10,26 @@ from logging.handlers import RotatingFileHandler
 
 
 #Bot token @Botfather
-
-#BOT_TOKENS = os.environ.get("BOT_TOKENS", "6403720726:AAH2s38VIkj9TWcxA2ZNlRmnz-G2CSot4MA,7934694179:AAGoY4YqNZ-TYq1i3LYohud8a8pTa2LH6HM").split(",")
-
-#if not BOT_TOKENS:
-   # raise Exception("No bot tokens provided!")
-
-#print(BOT_TOKENS)  # Output: ['12345:bot_token1', '67890:bot_token2']
-
-
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "6403720726:AAH2s38VIkj9TWcxA2ZNlRmnz-G2CSot4MA")
-
-
-TG_BOT_TOKEN_2 = os.environ.get("TG_BOT_TOKEN_2", "7934694179:AAGoY4YqNZ-TYq1i3LYohud8a8pTa2LH6HM")
-
-BOT_USERNAME = os.environ.get("BOT_USERNAME", "Uskabsns_bot")
-#bot username for file retrieval | without @
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "")
 
 #Your API ID from my.telegram.org
-APP_ID = int(os.environ.get("APP_ID", "29203773"))
+APP_ID = int(os.environ.get("APP_ID", ""))
 
 #Your API Hash from my.telegram.org
-API_HASH = os.environ.get("API_HASH", "955f05c16722e99e157125fc025bac41")
+API_HASH = os.environ.get("API_HASH", "")
 
 #Your db channel Id
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", " -1001999588896"))
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", ""))
 
 #OWNER ID
-OWNER_ID = int(os.environ.get("OWNER_ID", "5897568676"))
+OWNER_ID = int(os.environ.get("OWNER_ID", ""))
 
 #Port
-PORT = os.environ.get("PORT", "3788")
+PORT = os.environ.get("PORT", "8080")
 
 #Database 
-DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://koyeb77user:rohit870@cluster0.wgdkp.mongodb.net/?retryWrites=true&w=majority")
-DB_NAME = os.environ.get("DATABASE_NAME", "MONGONOOB2")
+DB_URI = os.environ.get("DATABASE_URL", "")
+DB_NAME = os.environ.get("DATABASE_NAME", "")
 
 #force sub channel id, if you want enable force sub
 FORCE_SUB_CHANNEL = int(os.environ.get("FORCE_SUB_CHANNEL", "0"))
@@ -55,7 +40,7 @@ TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "4"))
 START_MSG = os.environ.get("START_MESSAGE", "Hello {first}\n\nI can store private files in Specified Channel and other users can access it from special link.")
 try:
     ADMINS=[]
-    for x in (os.environ.get("ADMINS", "7328629001 1349045607").split()):
+    for x in (os.environ.get("ADMINS", "").split()):
         ADMINS.append(int(x))
 except ValueError:
         raise Exception("Your Admins list does not contain valid integers.")
