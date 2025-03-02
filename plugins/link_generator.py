@@ -6,8 +6,8 @@ from bot import *
 from config import *
 from helper_func import encode, get_message_id
 
-@Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('batch'))
-@Dot.on_message(filters.private & filters.user(ADMINS) & filters.command('batch'))
+
+@Client.on_message(filters.private & filters.user(ADMINS) & filters.command('batch'))
 async def batch(client: Client, message: Message):
     while True:
         try:
@@ -41,7 +41,7 @@ async def batch(client: Client, message: Message):
     await second_message.reply_text(f"<b>Here is your link</b>\n\n{link}", quote=True, reply_markup=reply_markup)
 
 
-@Bot.on_message(filters.private & filters.user(ADMINS) & filters.command('genlink'))
+@Client.on_message(filters.private & filters.user(ADMINS) & filters.command('genlink'))
 async def link_generator(client: Client, message: Message):
     while True:
         try:
